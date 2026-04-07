@@ -65,6 +65,8 @@ class Observation(BaseModel):
     actions_taken: list[str]                 # grows each turn
     turns_remaining: int
     ground_control_available: bool
+    reward: Optional[float] = None
+    done: bool = False
 
 
 class Action(BaseModel):

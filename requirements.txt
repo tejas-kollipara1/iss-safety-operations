@@ -1,2 +1,4 @@
 openai>=1.30.0
 pydantic>=2.7.0
+python-dotenv
+openenv-core>=0.2.0

@@ -393,13 +393,15 @@ def run_task(client: OpenAI, env: ISSEnvironment, task: str) -> None:
             action = choose_action(client, task, step_idx, obs)
 
             try:
-                obs, reward, done, _info = env.step(action)
+                obs = env.step(action)
             except (ValidationError, ValueError, RuntimeError) as e:
                 error_msg = str(e)
                 action = fallback_action(task, step_idx)
-                obs, reward, done, _info = env.step(action)
+                obs = env.step(action)
 
-            reward_val = float(reward.score)
+            reward_val = float(obs.reward) if obs.reward is not None else 0.0
+            done = obs.done
+
             rewards.append(reward_val)
             steps_taken = step_idx + 1
 
@@ -433,7 +435,9 @@ def main() -> int:
 
         return 0
 
-    except Exception:
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return 1
 
 

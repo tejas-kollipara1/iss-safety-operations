@@ -106,8 +106,8 @@ class ISSEnvironment:
 
         return obs
 
-    def step(self, action: Action) -> tuple[Observation, Reward, bool, dict]:
-        """Apply an action and return (obs, reward, done, info)."""
+    def step(self, action: Action) -> Observation:
+        """Apply an action and return Observation with embedded reward/done."""
         if self._state is None:
             raise RuntimeError("Call reset() before step().")
         if self._state.done:
@@ -167,19 +167,29 @@ class ISSEnvironment:
                 breakdown={},
             )
 
-        info: dict = {
-            "timestep": obs.timestep,
-            "turns_remaining": obs.turns_remaining,
-            "actions_taken": list(obs.actions_taken),
-        }
+        obs.reward = reward.score
+        obs.done = done
+        return obs
 
-        return obs, reward, done, info
-
-    def state(self) -> dict:
-        """Return the full internal state as a dict."""
+    @property
+    def state(self) -> Observation:
+        """Return the current Observation."""
         if self._state is None:
             raise RuntimeError("Call reset() before state().")
-        return self._state.model_dump()
+        return self._state.current_observation
+
+    def close(self) -> None:
+        """Clean up resources."""
+        pass
+
+    # Async wrappers required by openenv web interface
+    async def reset_async(self, episode_id: str = "audit_001", *args, **kwargs) -> Observation:
+        """Async wrapper for reset."""
+        return self.reset(episode_id=episode_id)
+
+    async def step_async(self, action: Action, *args, **kwargs) -> Observation:
+        """Async wrapper for step."""
+        return self.step(action)
 
     # ------------------------------------------------------------------
     # Helpers

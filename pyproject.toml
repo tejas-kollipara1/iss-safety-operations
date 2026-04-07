@@ -1,0 +1,17 @@
+[project]
+name = "iss-safety-operations"
+version = "0.1.0"
+description = "ISS Safety Operations OpenEnv Environment"
+authors = [{ name = "Tejas Kollipara" }]
+dependencies = [
+    "openai",
+    "pydantic",
+    "openenv-core>=0.2.0",
+    "python-dotenv"
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[tool.setuptools]
+packages = ["env", "server"]
